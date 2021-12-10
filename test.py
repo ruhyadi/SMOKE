@@ -246,7 +246,7 @@ def main(args):
             bbox = bbox.transpose(1,0).cpu().data.numpy()
             img = draw_box_3d(img, bbox)
             
-        cv2.imwrite(f'./img_{i:02d}.png', img)
+        cv2.imwrite(f'./output/img_{i:03d}.png', img)
         # import pdb;pdb.set_trace()
 
 if __name__ == "__main__":
