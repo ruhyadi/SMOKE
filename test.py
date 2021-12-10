@@ -230,20 +230,24 @@ def main(args):
     model = load_checkpoint(model, "./tools/logs/model_final.pth")
 
     output_folder, test_data_set = load_test_data(cfg)
-    for batch in test_data_set:
+
+    for (i, batch) in enumerate(test_data_set):
         images, targets, image_ids = batch["images"], batch["targets"], batch["img_ids"]
         images = images.to(device)
         output = inference(cfg, images, targets, model, device, logger)
         bbox3d = encoder_decodr(output, targets[0].get_field("K"), images.image_sizes[0])
 
-        img = cv2.imread(os.path.join("datasets/kitti/testing/image_2",
+        img = cv2.imread(os.path.join("./datasets/kitti/testing/image_2",
                         image_ids[0]+".png"), 1)
+
         # img = cv2.resize(img, (images.image_sizes[0][1], images.image_sizes[0][0]))
         for idx in range(bbox3d.size(0)):
             bbox = bbox3d[idx]
             bbox = bbox.transpose(1,0).cpu().data.numpy()
             img = draw_box_3d(img, bbox)
-        import pdb;pdb.set_trace()
+            
+        cv2.imwrite(f'./img_{i:02d}.png', img)
+        # import pdb;pdb.set_trace()
 
 if __name__ == "__main__":
     args = default_argument_parser().parse_args()
